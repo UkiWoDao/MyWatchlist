@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="author" content="UkiWoDao">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>JavaScript watchlist</title>
+</head>
+<body>
+  <!-- IDEA: pulse glow on TV icon -->
+  <!-- IDEA: fetch torrent, imdb data on click -->
+    <div class="container mt-4">
+        <h1 class="display-4 text-center">
+            <i class="fas fa-tv"></i> My<span class="text-primary">Watch</span>List
+        </h1>
+        <form id="watchlist">
+            <div class="form-group form-inline mt-5">
+                <label class="mr-2" for="title">Title</label>
+                <input class="form-control mr-sm-2 w-50" type="text" id="title">
+                <div class="radio">
+                    <input type="radio" name="type" class="" value="Film"> Film
+                    <input type="radio" name="type" class="" value="TV Show"> TV show
+                    <input type="radio" name="type" class="" value="Game"> Game
+                    <input type="radio" name="type" class="" value="Music"> Music
+                    <input type="radio" name="type" class="" value="Book"> Book
+                </div>
+                <button id="submit" type="submit" class="btn ml-sm-3 btn-primary disabled">ADD</button>
+            </div>
+            <table class="table mt-4">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="list"></tbody>
+            </table>
+        </form>
+    </div>
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>
