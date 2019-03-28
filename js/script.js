@@ -8,37 +8,54 @@ class Item {
 class UI {
     static displayItems(){
         const items = Store.getItems();
+        items.forEach((item) => UI.addItemToTable(item));
     }
+
     static addItemToTable(item){
         const list = document.getElementById('list');
         const row = document.createElement('tr');
+
+        // create new row for new item instance
         row.innerHTML = `
             <td>${item.title}</td>
             <td>${item.type}</td>
-            <td><a href="#"><i class="fas fa-trash mr-sm-3 delete"></i></a><a href="#"><i class="fas fa-star mr-sm-3"></i></a></td>
+            <td>
+                <a href="#"><i class="fas fa-trash mr-sm-3 delete"></i></a>
+                <a href="#"><i class="fas fa-star mr-sm-3"></i></a>
+            </td>
         `;
         list.appendChild(row);
     }
+
     static deleteItem(el){
         if (el.classList.contains('delete')){
             // 1. parent = anchor, 2. parent = table cell, 3. parent = table row
             el.parentElement.parentElement.parentElement.remove();
         }
+
+        // successfully removed entry
         UI.showAlert('Deleted', 'danger');
     }
-    static clearInput(){
-        document.getElementById('title').value = '';
-    }
+
+    // static clearInput(){
+    //     document.querySelector('title').value = '';
+    // }
+
     static showAlert(message, className){
         const div = document.createElement('div');
         div.className = `alert alert-${className}`;
         div.appendChild(document.createTextNode(message));
         const container = document.querySelector('.container');
         const form = document.getElementById('watchlist');
-        // TODO: make tooltips on the side instead
+        // IDEA: make tooltips on the side instead
         container.insertBefore(div, form);
+
         // make div disappear after some time
         setTimeout(() => document.querySelector('.alert').remove(), 2000);
+    }
+
+    static clearInput(){
+        document.getElementById('title').value = '';
     }
 }
 
@@ -48,16 +65,19 @@ class Store {
         if (localStorage.getItem('items') === null){
             items = [];
         } else {
+            // can't store objects in local storage, only strings, that's why we need JSON methods
             items = JSON.parse(localStorage.getItem('items'));
         }
         return items;
     }
+
     static addItem(item){
-        Store.getItems();
+        const items = Store.getItems();
         items.push(item);
         localStorage.setItem('items', JSON.stringify(items));
     }
-    static removeItem(){
+
+    static removeItem(title){
         const items = Store.getItems();
         items.forEach((item, index) => {
             if (book.title === title){
@@ -70,29 +90,32 @@ class Store {
 
 document.addEventListener('DOMContentLoaded', UI.displayItems);
 document.getElementById('watchlist').addEventListener('submit', (e) => {
-    // prevent submit refresh
+    // prevent submit
     e.preventDefault();
 
-    // get title
+    // get form values
     const title = document.getElementById('title').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
 
-    // track radio was focused at time of submitting
-    const type = document.querySelector('input[name="type"]:checked').value;;
+    // validate
+    if (title === ''){
+        showAlert('Title is empty', 'danger');
+    } else {
+      // make new instance
+      const item = new Item(title, type);
 
-    // make new instance
-    const item = new Item(title, type);
+      // add item to UI
+      UI.addItemToTable(item);
 
-    // add Item to UI
-    UI.addItemToTable(item);
+      // add item to store
+      Store.addItem(item);
 
-    // succesfully added
-    UI.showAlert('Saved', 'success');
-
-    // add item to store
-    Store.addItem(item);
+      // succesfully saved entry
+      UI.showAlert('Saved', 'success');
+    }
 
     // clear field
-    UI.clearInput();
+    // UI.clearInput();
 });
 
 // enable Add btn
@@ -109,5 +132,7 @@ function getRadioValue(e){
 }
 
 document.getElementById('list').addEventListener('click', (e) => {
-    UI.deleteItem(e.target)
+    // remove from UI
+    UI.deleteItem(e.target);
+
 });
