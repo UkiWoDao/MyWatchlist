@@ -1,3 +1,5 @@
+// IDEA: add boolean third parameter to Item constructor to keep track of starred entries
+
 class Item {
     constructor(title, type){
         this.title = title;
@@ -34,13 +36,9 @@ class UI {
         }
     }
 
-    // static clearInput(){
-    //     document.querySelector('title').value = '';
+    // static resetForm(){
+    //     document.form[0].reset;
     // }
-
-    static resetForm(){
-        document.form[0].reset;
-    }
 
     static showAlert(message, className){
         const div = document.createElement('div');
@@ -57,6 +55,12 @@ class UI {
 
     static clearInput(){
         document.getElementById('title').value = '';
+    }
+
+    // star highlights the table row
+    // FIXME: use AJAX to save changes
+    static starEntry(el){
+        el.classList.add('starred');
     }
 }
 
@@ -89,7 +93,7 @@ class Store {
     }
 }
 
-// make radio options unchecked
+// make radio options unchecked on page load
 document.addEventListener('DOMContentLoaded', function(){
     let radioInput = document.querySelectorAll('.radio input');
     for (var i = 0; i < radioInput.length; i++){
@@ -97,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 });
 
+
+// make radio inputs appear only if title tet field is not empty
 var toggleRadio = function() {
         let radio = document.querySelector('.radio');
         radio.classList.toggle('revealed');
@@ -116,6 +122,7 @@ title.addEventListener('keyup', function(){
       }
 })
 
+// make submit btn active only after a radio option is checked
 var radioChecked = false;
 var radioParent = document.querySelector('.radio');
 radioParent.addEventListener('click', isRadioChecked, false);
@@ -128,17 +135,19 @@ function isRadioChecked(e){
     }
 }
 
-// FIXME: make delete alert show only on trash bin click
 document.querySelector('#list').addEventListener('click', (e) => {
     // remove from UI
     UI.deleteItem(e.target);
 
     // remove from localStorage
-    Store.removeItem(e.target.parentElement.firstElementChild.textContent);
+    Store.removeItem(e.target.parentElement.parentElement.parentElement.firstElementChild.textContent);
 
-    // successfully removed entry
     if (e.target.classList.contains('fa-trash')){
         UI.showAlert('Deleted', 'danger');
+    } else if (e.target.classList.contains('fa-star')){
+        // added to favourites/starred
+        UI.starEntry(e.target.parentElement.parentElement.parentElement);
+        UI.showAlert('Favourited', 'info');
     }
 });
 
