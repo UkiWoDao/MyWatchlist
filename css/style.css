@@ -1,9 +1,27 @@
-.disabled {
-    pointer-events: none;
-}
+/* TODO: make short and smooth animation for radio and submit */
 
 input[type="radio"] {
     margin-left: 11px;
+}
+
+.radio {
+    display: none;
+    /* opacity: 0;
+    transition: all 0.3s; */
+}
+
+.revealed {
+    display: inline-block;
+    /* opacity: 1; */
+}
+
+/* #submit {
+    position: relative;
+    transition: all 0.3s;
+} */
+
+.disabled {
+    pointer-events: none;
 }
 
 .alert {
@@ -19,4 +37,8 @@ input[type="radio"] {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+tr td{
+    border-bottom: 1px solid #E95420;
 }
