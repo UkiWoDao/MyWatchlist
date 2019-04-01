@@ -32,14 +32,15 @@ class UI {
             // 1. parent = anchor, 2. parent = table cell, 3. parent = table row
             el.parentElement.parentElement.parentElement.remove();
         }
-
-        // successfully removed entry
-        UI.showAlert('Deleted', 'danger');
     }
 
     // static clearInput(){
     //     document.querySelector('title').value = '';
     // }
+
+    static resetForm(){
+        document.form[0].reset;
+    }
 
     static showAlert(message, className){
         const div = document.createElement('div');
@@ -65,7 +66,7 @@ class Store {
         if (localStorage.getItem('items') === null){
             items = [];
         } else {
-            // can't store objects in local storage, only strings, that's why we need JSON methods
+            // can't store objects in local storage, only strings, hence JSON methods
             items = JSON.parse(localStorage.getItem('items'));
         }
         return items;
@@ -80,13 +81,66 @@ class Store {
     static removeItem(title){
         const items = Store.getItems();
         items.forEach((item, index) => {
-            if (book.title === title){
+            if (item.title === title){
                 items.splice(index, 1);
             }
         });
         localStorage.setItem('items', JSON.stringify(items));
     }
 }
+
+// make radio options unchecked
+document.addEventListener('DOMContentLoaded', function(){
+    let radioInput = document.querySelectorAll('.radio input');
+    for (var i = 0; i < radioInput.length; i++){
+        radioInput[i].checked = false;
+    }
+});
+
+var toggleRadio = function() {
+        let radio = document.querySelector('.radio');
+        radio.classList.toggle('revealed');
+}
+
+var isEmpty = true;
+var title = document.getElementById('title');
+title.addEventListener('keyup', function(){
+    if (title.value === '' && isEmpty === false){
+        // prevent toggle if there are already characters in input field
+        toggleRadio();
+        isEmpty = true;
+        // prevent toggle if input field is already empty
+      } else if (title.value !== '' && isEmpty === true){
+        toggleRadio();
+        isEmpty = false;
+      }
+})
+
+var radioChecked = false;
+var radioParent = document.querySelector('.radio');
+radioParent.addEventListener('click', isRadioChecked, false);
+function isRadioChecked(e){
+    var submitBtn = document.getElementById('submit');
+    if (e.target !== e.currentTarget) {
+      e.stopPropagation;
+      submitBtn.classList.remove('disabled');
+      radioChecked = true;
+    }
+}
+
+// FIXME: make delete alert show only on trash bin click
+document.querySelector('#list').addEventListener('click', (e) => {
+    // remove from UI
+    UI.deleteItem(e.target);
+
+    // remove from localStorage
+    Store.removeItem(e.target.parentElement.firstElementChild.textContent);
+
+    // successfully removed entry
+    if (e.target.classList.contains('fa-trash')){
+        UI.showAlert('Deleted', 'danger');
+    }
+});
 
 document.addEventListener('DOMContentLoaded', UI.displayItems);
 document.getElementById('watchlist').addEventListener('submit', (e) => {
@@ -97,42 +151,15 @@ document.getElementById('watchlist').addEventListener('submit', (e) => {
     const title = document.getElementById('title').value;
     const type = document.querySelector('input[name="type"]:checked').value;
 
-    // validate
-    if (title === ''){
-        showAlert('Title is empty', 'danger');
-    } else {
-      // make new instance
-      const item = new Item(title, type);
+    // make new instance
+    const item = new Item(title, type);
 
-      // add item to UI
-      UI.addItemToTable(item);
+    // add item to UI
+    UI.addItemToTable(item);
 
-      // add item to store
-      Store.addItem(item);
+    // add item to store
+    Store.addItem(item);
 
-      // succesfully saved entry
-      UI.showAlert('Saved', 'success');
-    }
-
-    // clear field
-    // UI.clearInput();
-});
-
-// enable Add btn
-// addeventlistener on title
-// if both title is not empty and a button from btn-group has been pressed, enable ADD
-var radioParent = document.querySelector('.radio');
-var submitBtn = document.getElementById('submit');
-radioParent.addEventListener('click', getRadioValue, false);
-function getRadioValue(e){
-    if (e.target !== e.currentTarget) {
-      submitBtn.classList.remove('disabled');
-      e.stopPropagation;
-    }
-}
-
-document.getElementById('list').addEventListener('click', (e) => {
-    // remove from UI
-    UI.deleteItem(e.target);
-
+    // succesfully saved entry
+    UI.showAlert('Saved', 'success');
 });
